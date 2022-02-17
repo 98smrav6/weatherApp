@@ -31,3 +31,24 @@ function renderSearchHistory() {
         searchHistoryContainer.append(btn);
       }
     }
+
+    // update history in local storage
+function appendToHistory(search) {
+    // If there is no search term return the function
+    if (searchHistory.indexOf(search) !== -1) {
+      return;
+    }
+    searchHistory.push(search);
+  
+    localStorage.setItem('search-history', JSON.stringify(searchHistory));
+    renderSearchHistory();
+  }
+  
+  // Function to get search history from local storage
+  function initSearchHistory() {
+    var storedHistory = localStorage.getItem('search-history');
+    if (storedHistory) {
+      searchHistory = JSON.parse(storedHistory);
+    }
+    renderSearchHistory();
+  }
