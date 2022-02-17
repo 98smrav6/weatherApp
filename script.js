@@ -156,3 +156,97 @@ function renderForecastCard(forecast, timezone) {
   
     forecastContainer.append(col);
   }
+
+  // Function to display 5 day forecast.
+function renderForecast(dailyForecast, timezone) {
+    // Create unix timestamps for start and end of 5 day forecast
+    var startDt = dayjs().tz(timezone).add(1, 'day').startOf('day').unix();
+    var endDt = dayjs().tz(timezone).add(6, 'day').startOf('day').unix();
+  
+    var headingCol = document.createElement('div');
+    var heading = document.createElement('h4');
+  
+    headingCol.setAttribute('class', 'col-12');
+    heading.textContent = '5-Day Forecast:';
+    headingCol.append(heading);
+  
+    forecastContainer.innerHTML = '';
+    forecastContainer.append(headingCol);
+    for (var i = 0; i < dailyForecast.length; i++) {
+    
+      if (dailyForecast[i].dt >= startDt && dailyForecast[i].dt < endDt) {
+        renderForecastCard(dailyForecast[i], timezone);
+      }
+    }
+  }
+  
+  function renderItems(city, data) {
+    renderCurrentWeather(city, data.current, data.timezone);
+    renderForecast(data.daily, data.timezone);
+  }
+  
+  // Fetches weather data for given location from the Weather Geolocation
+  function fetchWeather(location) {
+    var { lat } = location;
+    var { lon } = location;
+    var city = location.name;
+    var apiUrl = `${weatherApiRootUrl}/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly&appid=${weatherApiKey}`;
+  
+    fetch(apiUrl)
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        renderItems(city, data);
+      })
+      .catch(function (err) {
+        console.error(err);
+      });
+  }
+  
+  function fetchCoords(search) {
+    var apiUrl = `${weatherApiRootUrl}/geo/1.0/direct?q=${search}&limit=5&appid=${weatherApiKey}`;
+  
+    fetch(apiUrl)
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data[0]) {
+          alert('Location not found');
+        } else {
+          appendToHistory(search);
+          fetchWeather(data[0]);
+        }
+      })
+      .catch(function (err) {
+        console.error(err);
+      });
+  }
+  
+  function handleSearchFormSubmit(e) {
+  
+    if (!searchInput.value) {
+      return;
+    }
+  
+    e.preventDefault();
+    var search = searchInput.value.trim();
+    fetchCoords(search);
+    searchInput.value = '';
+  }
+  
+  function handleSearchHistoryClick(e) {
+  
+    if (!e.target.matches('.btn-history')) {
+      return;
+    }
+  
+    var btn = e.target;
+    var search = btn.getAttribute('data-search');
+    fetchCoords(search);
+  }
+  
+  initSearchHistory();
+  searchForm.addEventListener('submit', handleSearchFormSubmit);
+  searchHistoryContainer.addEventListener('click', handleSearchHistoryClick);
