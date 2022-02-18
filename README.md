@@ -15,6 +15,7 @@
 
 ![Capture1](https://user-images.githubusercontent.com/89051027/154593015-0b8181e7-4c84-412c-be00-062f74fe302a.PNG)
 
-**Input a city and click "Searchd" and then forcast will display: **
+**Input a city and click "Searchd" and then forcast will display:**
+
 ![Capture2](https://user-images.githubusercontent.com/89051027/154593037-c53ad96e-2aea-41cf-acde-b6a01430bcde.PNG)
 
